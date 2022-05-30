@@ -21,8 +21,14 @@ namespace psdw
 
 	enum class PSDChannelOrder
 	{
-		RGB,
-		BGR
+		RGBA,
+		BGRA
+	};
+
+	enum class PSDCompression
+	{
+		None,
+		RLE
 	};
 
 	struct PSDColour
@@ -33,8 +39,8 @@ namespace psdw
 	class PSDocument
 	{
 	public:
-		// Initialises a blank, RGB, 8BPC document.
-		// doc_width, doc_height and doc_ppi should be between 1 and 30,000.
+		/* Initialises a blank, RGB, 8BPC document.
+		doc_width, doc_height and doc_ppi should be between 1 and 30,000. */
 		PSDocument(
 			const int doc_width,
 			const int doc_height,
@@ -42,16 +48,21 @@ namespace psdw
 			const PSDColour doc_background_rgb = { 255, 255, 255 },
 			const std::filesystem::path doc_profile_path = "");
 
-		// img should be a pointer to an 8BPC band-interleaved-by-pixel
-		// colour array in RGB or BGR format. layer_x and layer_y refer to
-		// the position of the top-left corner of the layer.
+		/* img should be a pointer to an 8BPC band-interleaved-by-pixel colour 
+		array in RGBA or BGRA format. layer_x and layer_y refer to the position 
+		of the top-left corner of the layer. Compression can either be turned 
+		off with None or set to RLE for PackBits run-length encoding. Using 
+		RLE will result in a much smaller file for layers with simple graphics 
+		but may inflate file size for photographs. */
 		PSDStatus add_layer(const unsigned char* img,
 			const int img_width, const int img_height,
 			const int layer_x, const int layer_y,
 			const std::string layer_name,
-			PSDChannelOrder channel_order=PSDChannelOrder::BGR);
+			PSDChannelOrder channel_order=PSDChannelOrder::BGRA,
+			PSDCompression compression=PSDCompression::RLE);
 
-		PSDStatus save(std::filesystem::path filename);
+		PSDStatus save(const std::filesystem::path& filename,
+			bool overwrite=false);
 
 		PSDStatus status() const { return m_status; }
 
@@ -139,16 +150,34 @@ namespace psdw
 			uint16_t filler{};
 		};
 
-		template<typename T>
-		void write(std::ofstream& file, const T& val);
+		bool little_endian();
 
 		PSDStatus pack_image(
 			const unsigned char* img,
 			int img_width,
 			int img_height,
-			PSDChannelOrder channel_order);
+			PSDChannelOrder channel_order,
+			PSDCompression compression);
+
+		void finalise_pack(std::vector<uint8_t>& buf, uint16_t& bytes);
+		void finalise_pack(const uint8_t val, int& reps, uint16_t& bytes);
+
+		// Given a pixel coordinate, retrieve the index of the corresponding
+		// element in the band-interleaved-by-pixel 1D array.
+		int get_index(int channels, int width, int channel, int x, int y);
+
+		void write(std::ofstream& file, const uint8_t& val) const;
+		void write(std::ofstream& file, const uint16_t& val) const;
+		void write(std::ofstream& file, const uint32_t& val) const;
+		void write(std::ofstream& file, const std::vector<uint8_t>& val) const;
+		void write(std::ofstream& file, const std::vector<uint16_t>& val) const;
+		void write(std::ofstream& file, const std::string& val) const;
+		void write(std::ofstream& file, std::ifstream& val) const;
+		void write(std::ofstream& file, const Rect& val) const;
+		void write(std::ofstream& file, const LayerBlendingRanges& val) const;
 
 		PSDStatus m_status;
+		bool m_little_endian;
 
 		// Header section data.
 		const std::string m_file_signature;
@@ -171,6 +200,7 @@ namespace psdw
 		uint32_t m_resolution_info_length;
 		ResolutionInfo m_resolution;
 
+		uint16_t m_icc_profile_uid;
 		std::filesystem::path m_icc_profile_path;
 
 		// Layer and mask section data.
@@ -192,9 +222,6 @@ namespace psdw
 		std::vector<uint16_t> m_row_bytecounts;
 		std::vector<uint8_t> m_image_data;
 	};
-
-	template <>
-	void PSDocument::write(std::ofstream& file, const std::string& val);
 }
 
 #endif
