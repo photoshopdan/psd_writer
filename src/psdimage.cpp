@@ -1,7 +1,6 @@
 #include "psdimage.hpp"
 #include "psdtypes.hpp"
 
-
 using namespace psdimpl;
 using namespace psdw;
 
@@ -13,12 +12,12 @@ size_t PSDImage::get_index(int channels, int width, int channel,
 }
 
 std::vector<int> PSDImage::enumerate_channels(
-    psdimpl::PSDChannelOrder channel_order) const
+    ChannelOrder channel_order) const
 {
     std::vector<int> channels;
-    if (channel_order == psdimpl::PSDChannelOrder::RGBA)
+    if (channel_order == ChannelOrder::RGBA)
         channels = { 1, 2, 3, 0 };
-    else if (channel_order == psdimpl::PSDChannelOrder::BGRA)
+    else if (channel_order == ChannelOrder::BGRA)
         channels = { 3, 2, 1, 0 };
     else
         channels = { 0, 1, 2 };
@@ -27,7 +26,7 @@ std::vector<int> PSDImage::enumerate_channels(
 }
 
 PSDStatus PSDRawImage::load(const unsigned char* img,
-	psdimpl::PSDChannelOrder channel_order, int width, int height)
+    ChannelOrder channel_order, int width, int height)
 {
     // Overwrite.
     if (!m_image_data.empty())
@@ -167,7 +166,7 @@ void PSDRawImage::composite(const unsigned char* foreground,
 }
 
 PSDStatus PSDCompressedImage::load(const unsigned char* img,
-	psdimpl::PSDChannelOrder channel_order, int width, int height)
+	ChannelOrder channel_order, int width, int height)
 {
     // Overwrite.
     if (!m_image_data.empty())
@@ -304,7 +303,7 @@ PSDStatus PSDCompressedImage::load(std::vector<PSDChannel> img, int channels,
     }
 
     // Load conventionally.
-    PSDStatus status = load(flat_img.data(), psdimpl::PSDChannelOrder::RGB,
+    PSDStatus status = load(flat_img.data(), ChannelOrder::RGB,
         width, height);
 
     return status;

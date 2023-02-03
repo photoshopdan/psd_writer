@@ -5,16 +5,21 @@
 
 #include <cstdint>
 #include <vector>
-#include <fstream>
-
 
 namespace psdimpl
 {
+	struct PSDChannel
+	{
+		uint16_t compression{};
+		std::vector<uint8_t> image_data{};
+		std::vector<uint16_t> bytecounts{};
+	};
+
 	class PSDImage
 	{
 	public:
 		virtual psdw::PSDStatus load(const unsigned char* img,
-			psdimpl::PSDChannelOrder channel_order, int width, int height) = 0;
+			psdimpl::ChannelOrder channel_order, int width, int height) = 0;
 		virtual psdw::PSDStatus load(std::vector<PSDChannel> img, int channels,
 			int width, int height) = 0;
 
@@ -29,8 +34,7 @@ namespace psdimpl
 		size_t get_index(int channels, int width, int channel,
 			int x, int y) const;
 
-		std::vector<int> enumerate_channels(
-			psdimpl::PSDChannelOrder channel_order) const;
+		std::vector<int> enumerate_channels(ChannelOrder channel_order) const;
 
 		int m_channels{};
 		int m_width{};
@@ -42,7 +46,7 @@ namespace psdimpl
 	{
 	public:
 		psdw::PSDStatus load(const unsigned char* img,
-			psdimpl::PSDChannelOrder channel_order, int width, int height) override;
+			ChannelOrder channel_order, int width, int height) override;
 		psdw::PSDStatus load(std::vector<PSDChannel> img, int channels,
 			int width, int height) override;
 
@@ -56,7 +60,7 @@ namespace psdimpl
 	{
 	public:
 		psdw::PSDStatus load(const unsigned char* img,
-			psdimpl::PSDChannelOrder channel_order, int width, int height) override;
+			ChannelOrder channel_order, int width, int height) override;
 		psdw::PSDStatus load(std::vector<PSDChannel> img, int channels,
 			int width, int height) override;
 

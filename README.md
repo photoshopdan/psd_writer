@@ -1,7 +1,7 @@
 ### Work in progress - not complete or functional
 
 # psd_writer
-psd_writer is a simple C++ library for creating PSD files. At present, it only supports the creation of 8BPC RGB documents.
+psd_writer is a simple C++ library for creating Adobe® Photoshop® PSD files. At present, it only supports the creation of 8BPC RGB documents.
 
 ## Usage
 A basic use is shown below. First a blank, 1920px X 1080px document is created, then an image is added as a layer, before the document is saved as a file.
