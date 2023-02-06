@@ -1,9 +1,11 @@
 #include "psdwriter.hpp"
+#include "psddata.hpp"
 #include "psdtypes.hpp"
 
 #include <filesystem>
 #include <bit>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 using namespace psdw;
@@ -47,7 +49,6 @@ PSDStatus PSDWriter::write(const std::filesystem::path& filepath, bool overwrite
     // Image resources section.
     write(m_data.image_resources.length());
 
-    write(m_data.image_resources.resolution.length);
     write(m_data.image_resources.resolution.signature);
     write(m_data.image_resources.resolution.uid);
     write(m_data.image_resources.resolution.null_name);
@@ -73,7 +74,7 @@ PSDStatus PSDWriter::write(const std::filesystem::path& filepath, bool overwrite
     // Layer and mask section.
     write(m_data.layer_and_mask_info.layer_and_mask_info_length());
     write(m_data.layer_and_mask_info.layer_info_length());
-    write(m_data.layer_and_mask_info.layer_count);
+    write(m_data.layer_and_mask_info.layer_count());
     for (const LayerRecord& lr : m_data.layer_and_mask_info.layer_records)
     {
         write(lr.layer_content_rect);
@@ -115,8 +116,9 @@ PSDStatus PSDWriter::write(const std::filesystem::path& filepath, bool overwrite
         write(lr.blending_range_green);
         write(lr.blending_range_blue);
         write(lr.blending_range_alpha);
-        write(lr.layer_name, true);
+        write(lr.layer_name);
         write(lr.unicode_layer_name);
+        write(lr.layer_name_source_setting);
         write(lr.layer_id);
         write(lr.blend_clipping_elements);
         write(lr.blend_interior_elements);
@@ -137,10 +139,11 @@ PSDStatus PSDWriter::write(const std::filesystem::path& filepath, bool overwrite
             write(channel.image_data);
         }
     }
+    write(m_data.layer_and_mask_info.mystery_null);
 
-    write(m_data.layer_and_mask_info.global_layer_mask_info.length());
     if (m_data.layer_and_mask_info.global_layer_mask_info.active)
     {
+        write(m_data.layer_and_mask_info.global_layer_mask_info.length());
         write(m_data.layer_and_mask_info.global_layer_mask_info.overlay_cs);
         write(m_data.layer_and_mask_info.global_layer_mask_info.colour_comp_1);
         write(m_data.layer_and_mask_info.global_layer_mask_info.colour_comp_2);
@@ -251,34 +254,42 @@ void PSDWriter::write(const uint32_t& val)
 
 void PSDWriter::write(const double& val)
 {
-    char buffer[sizeof(val)]{};
-    uint64_t temp_val{ *(uint64_t*)&val };
+    char buffer[sizeof(val)]{ 0 };
+    const uint64_t temp_val{ *(uint64_t*)&val };
 
     if (little_endian())
     {
         // Convert to big-endian.
-        buffer[7] = temp_val & 0x00000000000000ff;
-        buffer[6] = (temp_val & 0x000000000000ff00) >> 8;
-        buffer[5] = (temp_val & 0x0000000000ff0000) >> 16;
-        buffer[4] = (temp_val & 0x00000000ff000000) >> 24;
-        buffer[3] = (temp_val & 0x000000ff00000000) >> 32;
-        buffer[2] = (temp_val & 0x0000ff0000000000) >> 40;
-        buffer[1] = (temp_val & 0x00ff000000000000) >> 48;
-        buffer[0] = (temp_val & 0xff00000000000000) >> 56;
+        buffer[7] = static_cast<char>(temp_val & 0x00000000000000ff);
+        buffer[6] = static_cast<char>((temp_val & 0x000000000000ff00) >> 8);
+        buffer[5] = static_cast<char>((temp_val & 0x0000000000ff0000) >> 16);
+        buffer[4] = static_cast<char>((temp_val & 0x00000000ff000000) >> 24);
+        buffer[3] = static_cast<char>((temp_val & 0x000000ff00000000) >> 32);
+        buffer[2] = static_cast<char>((temp_val & 0x0000ff0000000000) >> 40);
+        buffer[1] = static_cast<char>((temp_val & 0x00ff000000000000) >> 48);
+        buffer[0] = static_cast<char>((temp_val & 0xff00000000000000) >> 56);
     }
     else
     {
-        buffer[0] = temp_val & 0x00000000000000ff;
-        buffer[1] = (temp_val & 0x000000000000ff00) >> 8;
-        buffer[2] = (temp_val & 0x0000000000ff0000) >> 16;
-        buffer[3] = (temp_val & 0x00000000ff000000) >> 24;
-        buffer[4] = (temp_val & 0x000000ff00000000) >> 32;
-        buffer[5] = (temp_val & 0x0000ff0000000000) >> 40;
-        buffer[6] = (temp_val & 0x00ff000000000000) >> 48;
-        buffer[7] = (temp_val & 0xff00000000000000) >> 56;
+        buffer[0] = static_cast<char>(temp_val & 0x00000000000000ff);
+        buffer[1] = static_cast<char>((temp_val & 0x000000000000ff00) >> 8);
+        buffer[2] = static_cast<char>((temp_val & 0x0000000000ff0000) >> 16);
+        buffer[3] = static_cast<char>((temp_val & 0x00000000ff000000) >> 24);
+        buffer[4] = static_cast<char>((temp_val & 0x000000ff00000000) >> 32);
+        buffer[5] = static_cast<char>((temp_val & 0x0000ff0000000000) >> 40);
+        buffer[6] = static_cast<char>((temp_val & 0x00ff000000000000) >> 48);
+        buffer[7] = static_cast<char>((temp_val & 0xff00000000000000) >> 56);
     }
 
     m_writer.write(buffer, sizeof(val));
+}
+
+void PSDWriter::write_with_null(const double& val)
+{
+    write(val);
+    char buffer[1]{ 0 };
+
+    m_writer.write(buffer, 1);
 }
 
 void PSDWriter::write(const std::vector<char>& val)
@@ -298,25 +309,19 @@ void PSDWriter::write(const std::vector<uint16_t>& val)
         write(i);
 }
 
-void PSDWriter::write(const std::string& val, bool pascal_string = false)
+void PSDWriter::write(const std::string& val)
 {
-    if (pascal_string)
-    {
-        uint8_t string_length{ static_cast<uint8_t>(val.length()) };
-        int buffer_length{ 4 - (string_length + 1) % 4 };
-        uint8_t buffer_val{ 0 };
-        write(string_length);
-        m_writer.write(val.data(), val.size());
-        for (int i{ 0 }; i < buffer_length; i++)
-            write(buffer_val);
-    }
-    else
-    {
-        m_writer.write(val.data(), val.size());
-    }
+    m_writer.write(val.data(), val.size());
 }
 
-void PSDWriter::write(const psdimpl::LayerRect& val)
+void PSDWriter::write(const PascalString& val)
+{
+    write(static_cast<uint8_t>(val.string.size()));
+    write(val.string);
+    write(val.buffer);
+}
+
+void PSDWriter::write(const LayerRect& val)
 {
     write(val.top);
     write(val.left);
@@ -324,13 +329,13 @@ void PSDWriter::write(const psdimpl::LayerRect& val)
     write(val.right);
 }
 
-void PSDWriter::write(const psdimpl::ChannelInfo& val)
+void PSDWriter::write(const ChannelInfo& val)
 {
     write(val.id);
     write(val.length);
 }
 
-void PSDWriter::write(const psdimpl::LayerBlendingRanges& val)
+void PSDWriter::write(const LayerBlendingRanges& val)
 {
     write(val.src_black_lower);
     write(val.src_black_upper);
@@ -342,7 +347,7 @@ void PSDWriter::write(const psdimpl::LayerBlendingRanges& val)
     write(val.dst_white_upper);
 }
 
-void PSDWriter::write(const psdimpl::AdditionalLayerInfo& val)
+void PSDWriter::write(const AdditionalLayerInfo& val)
 {
     write(val.signature);
     write(val.key);
@@ -350,7 +355,16 @@ void PSDWriter::write(const psdimpl::AdditionalLayerInfo& val)
     write(val.data);
 }
 
-void PSDWriter::write(const psdimpl::AdditionalLayerInfoLyid& val)
+void PSDWriter::write(const AdditionalLayerInfoLuni& val)
+{
+    write(val.signature);
+    write(val.key);
+    write(val.length());
+    write(val.string_length);
+    write(val.data);
+}
+
+void PSDWriter::write(const AdditionalLayerInfoLyid& val)
 {
     write(val.signature);
     write(val.key);
@@ -358,13 +372,35 @@ void PSDWriter::write(const psdimpl::AdditionalLayerInfoLyid& val)
     write(val.data);
 }
 
-void PSDWriter::write(const psdimpl::AdditionalLayerInfoCust& val)
+void PSDWriter::write(const AdditionalLayerInfoLnsr& val)
 {
     write(val.signature);
     write(val.key);
     write(val.length());
-    write(val.data);
-    write(val.time);
+    write(val.keyword);
 }
 
+void PSDWriter::write(const AdditionalLayerInfoShmd& val)
+{
+    write(val.signature);
+    write(val.key);
+    write(val.data);
+}
+
+void PSDWriter::write(const AdditionalLayerInfoCust& val)
+{
+    write(val.signature);
+    write(val.key);
+    write(val.data);
+    write_with_null(val.time);
+}
+
+void PSDWriter::write(const AdditionalLayerInfoFxrp& val)
+{
+    write(val.signature);
+    write(val.key);
+    write(val.length());
+    write(val.x);
+    write(val.y);
+}
 
