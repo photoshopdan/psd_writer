@@ -1,4 +1,5 @@
 #include "psdocument.hpp"
+#include "psddata.hpp"
 #include "psdtypes.hpp"
 #include "psdimage.hpp"
 #include "psdwriter.hpp"
@@ -9,12 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <filesystem>
-#include <cmath>
 #include <memory>
-#include <locale>
-#include <codecvt>
-#include <cuchar>
-#include <chrono>
 
 using namespace psdw;
 using namespace psdimpl;
@@ -44,27 +40,36 @@ PSDocument::PSDocument(
         m_data.image_data.height());
 
     // Update layer and mask section data.
-    ++m_data.layer_and_mask_info.layer_count;
     m_data.layer_and_mask_info.layer_records.push_back(
-        LayerRecord{0, "Background"});
+        LayerRecord{1, "Background"});
     m_data.layer_and_mask_info.layer_records.back().layer_content_rect = {
         0, 0, m_data.header.height, m_data.header.width };
     m_data.layer_and_mask_info.layer_records.back().channel_count = 3;
+
     m_data.layer_and_mask_info.layer_records.back().red_channel_info.length =
-        m_data.layer_and_mask_info.layer_image_data.
-        back()->data()[0].bytecounts.size()
-        + m_data.layer_and_mask_info.layer_image_data.
-        back()->data()[0].image_data.size();
-    m_data.layer_and_mask_info.layer_records.back().blue_channel_info.length =
-        m_data.layer_and_mask_info.layer_image_data.
-        back()->data()[1].bytecounts.size()
-        + m_data.layer_and_mask_info.layer_image_data.
-        back()->data()[1].image_data.size();
+        static_cast<uint32_t>(
+            sizeof(m_data.layer_and_mask_info.layer_image_data.
+                back()->data()[0].compression)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[0].bytecounts.size() * sizeof(uint16_t)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[0].image_data.size());
     m_data.layer_and_mask_info.layer_records.back().green_channel_info.length =
-        m_data.layer_and_mask_info.layer_image_data.
-        back()->data()[2].bytecounts.size()
-        + m_data.layer_and_mask_info.layer_image_data.
-        back()->data()[2].image_data.size();
+        static_cast<uint32_t>(
+            sizeof(m_data.layer_and_mask_info.layer_image_data.
+                back()->data()[1].compression)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[1].bytecounts.size() * sizeof(uint16_t)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[1].image_data.size());
+    m_data.layer_and_mask_info.layer_records.back().blue_channel_info.length =
+        static_cast<uint32_t>(
+            sizeof(m_data.layer_and_mask_info.layer_image_data.
+                back()->data()[2].compression)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[2].bytecounts.size() * sizeof(uint16_t)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[2].image_data.size());
 }
 
 PSDStatus PSDocument::set_resolution(double ppi)
@@ -98,12 +103,11 @@ PSDStatus PSDocument::set_profile(std::filesystem::path icc_profile)
         m_status = PSDStatus::NoProfileError;
         return m_status;
     }
-
+    
     uint32_t length = static_cast<uint32_t>(profilef.tellg());
     profilef.seekg(0, std::ios::beg);
 
-    m_data.image_resources.icc_profile.data.reserve(length);
-
+    m_data.image_resources.icc_profile.data.resize(length);
     if (!profilef.read(m_data.image_resources.icc_profile.data.data(), length))
     {
         m_data.image_resources.icc_profile.data.clear();
@@ -146,7 +150,52 @@ PSDStatus PSDocument::add_layer(const unsigned char* img,
     m_data.image_data.composite(img, rect, channel_order);
 
     // Update layer data.
-    m_data.layer_and_mask_info.layer_count++;
+    m_data.layer_and_mask_info.layer_records.push_back(
+        LayerRecord{
+            static_cast<uint32_t>(
+                m_data.layer_and_mask_info.layer_count() + 1),
+            layer_name});
+    m_data.layer_and_mask_info.layer_records.back().layer_content_rect = {
+        static_cast<uint32_t>(rect.y),
+        static_cast<uint32_t>(rect.x),
+        static_cast<uint32_t>(rect.h + rect.y),
+        static_cast<uint32_t>(rect.w + rect.x) };
+    m_data.layer_and_mask_info.layer_records.back().channel_count = 4;
+    m_data.layer_and_mask_info.layer_records.back().reference_point.x = rect.x;
+    m_data.layer_and_mask_info.layer_records.back().reference_point.y = rect.y;
+    
+    m_data.layer_and_mask_info.layer_records.back().alpha_channel_info.length =
+        static_cast<uint32_t>(
+            sizeof(m_data.layer_and_mask_info.layer_image_data.
+                back()->data()[0].compression)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[0].bytecounts.size() * sizeof(uint16_t)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[0].image_data.size());
+    m_data.layer_and_mask_info.layer_records.back().red_channel_info.length =
+        static_cast<uint32_t>(
+            sizeof(m_data.layer_and_mask_info.layer_image_data.
+                back()->data()[1].compression)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[1].bytecounts.size() * sizeof(uint16_t)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[1].image_data.size());
+    m_data.layer_and_mask_info.layer_records.back().green_channel_info.length =
+        static_cast<uint32_t>(
+            sizeof(m_data.layer_and_mask_info.layer_image_data.
+                back()->data()[2].compression)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[2].bytecounts.size() * sizeof(uint16_t)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[2].image_data.size());
+    m_data.layer_and_mask_info.layer_records.back().blue_channel_info.length =
+        static_cast<uint32_t>(
+            sizeof(m_data.layer_and_mask_info.layer_image_data.
+                back()->data()[3].compression)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[3].bytecounts.size() * sizeof(uint16_t)
+            + m_data.layer_and_mask_info.layer_image_data.
+            back()->data()[3].image_data.size());
 
     return m_status;
 }

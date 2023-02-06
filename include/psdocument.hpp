@@ -2,14 +2,11 @@
 #define PSDOCUMENT_H
 
 #include "psdtypes.hpp"
+#include "psddata.hpp"
 #include "psdwriter.hpp"
 
 #include <cstdint>
 #include <string>
-#include <fstream>
-#include <vector>
-#include <filesystem>
-#include <memory>
 
 namespace psdw
 {
