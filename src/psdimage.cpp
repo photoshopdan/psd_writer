@@ -1,6 +1,9 @@
 #include "psdimage.hpp"
 #include "psdtypes.hpp"
 
+#include <vector>
+#include <cstdint>
+
 using namespace psdimpl;
 using namespace psdw;
 
