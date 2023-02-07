@@ -246,7 +246,13 @@ uint32_t LayerRecord::extra_data_length() const
 
 uint32_t ImageResources::length() const
 {
-    return resolution.length + icc_profile.length();
+    uint32_t length{};
+
+    uint32_t prefix_length{ 12 };
+    length += resolution.length + prefix_length;
+    length += icc_profile.length() + prefix_length;
+
+    return length;
 }
 
 uint32_t ICCProfile::length() const
