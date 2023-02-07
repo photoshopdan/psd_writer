@@ -143,7 +143,8 @@ void PSDRawImage::composite(const unsigned char* foreground,
 
             fg_alpha *= 1.0f / 255; // Normalise 0 - 1.
 
-            size_t bg_index{ static_cast<size_t>(y) * rect.w + x };
+            size_t bg_index{ static_cast<size_t>(y + rect.y) * width()
+                + x + rect.x };
             
             uint8_t new_red{
                 static_cast<uint8_t>(
@@ -152,12 +153,12 @@ void PSDRawImage::composite(const unsigned char* foreground,
                         * (1.0f - fg_alpha))) };
             uint8_t new_green{ 
                 static_cast<uint8_t>(
-                    round(fg_red * fg_alpha
+                    round(fg_green * fg_alpha
                         + m_image_data[bg_channels[1]].image_data[bg_index]
                         * (1.0f - fg_alpha))) };
             uint8_t new_blue{
                 static_cast<uint8_t>(
-                    round(fg_red * fg_alpha
+                    round(fg_blue * fg_alpha
                         + m_image_data[bg_channels[2]].image_data[bg_index]
                         * (1.0f - fg_alpha))) };
 
