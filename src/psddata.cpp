@@ -250,7 +250,10 @@ uint32_t ImageResources::length() const
 
     uint32_t prefix_length{ 12 };
     length += resolution.length + prefix_length;
-    length += icc_profile.length() + prefix_length;
+    if (icc_profile.data.size())
+    {
+        length += icc_profile.length() + prefix_length;
+    }
 
     return length;
 }
