@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "psdimage.hpp"
 #include "psdtypes.hpp"
 
@@ -14,12 +15,12 @@ size_t PSDImage::get_index(int channels, int width, int channel,
 		+ static_cast<size_t>(x) * channels + channel;
 }
 
-std::vector<int> PSDImage::enumerate_channels(
+const std::vector<int> PSDImage::enumerate_channels(
     ChannelOrder channel_order) const
 {
     std::vector<int> channels;
     if (channel_order == ChannelOrder::RGBA)
-        channels = { 1, 2, 3, 0 };
+        channels = { 3, 0, 1, 2 };
     else if (channel_order == ChannelOrder::BGRA)
         channels = { 3, 2, 1, 0 };
     else
@@ -35,7 +36,7 @@ PSDStatus PSDRawImage::load(const unsigned char* img,
     if (!m_image_data.empty())
         m_image_data.clear();
 
-    std::vector<int> channels{ enumerate_channels(channel_order) };
+    const std::vector<int> channels{ enumerate_channels(channel_order) };
 
     m_channels = static_cast<int>(channels.size());
     m_width = width;
@@ -56,7 +57,7 @@ PSDStatus PSDRawImage::load(const unsigned char* img,
                     img[get_index(m_channels, width, c, x, y)]);
             }
         }
-    } 
+    }
 
     return PSDStatus::Success;
 }
@@ -177,7 +178,7 @@ PSDStatus PSDCompressedImage::load(const unsigned char* img,
         m_image_data.clear();
     
     // An attempt to replicate Photoshop's implementation of PackBits.
-    std::vector<int> channels{ enumerate_channels(channel_order) };
+    const std::vector<int> channels{ enumerate_channels(channel_order) };
 
     m_channels = static_cast<int>(channels.size());
     m_width = width;

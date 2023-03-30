@@ -34,7 +34,7 @@ namespace psdimpl
 		size_t get_index(int channels, int width, int channel,
 			int x, int y) const;
 
-		std::vector<int> enumerate_channels(ChannelOrder channel_order) const;
+		const std::vector<int> enumerate_channels(ChannelOrder channel_order) const;
 
 		int m_channels{};
 		int m_width{};
