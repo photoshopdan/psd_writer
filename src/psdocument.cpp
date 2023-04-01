@@ -145,7 +145,8 @@ PSDStatus PSDocument::add_layer(const unsigned char* img,
     else
         co = psdimpl::ChannelOrder::BGRA;
 
-    m_data.layer_and_mask_info.layer_image_data.back()->load(img, co, rect.w, rect.h);
+    m_data.layer_and_mask_info.layer_image_data.back()->load(
+        img, co, rect.w, rect.h);
 
     // Add image to merged image.
     m_data.image_data.composite(img, rect, channel_order);

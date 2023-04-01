@@ -5,7 +5,6 @@
 
 #include <locale>
 #include <codecvt>
-#include <iostream>
 
 using namespace psdw;
 
