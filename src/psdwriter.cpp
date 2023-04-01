@@ -177,12 +177,13 @@ PSDStatus PSDWriter::write(const std::filesystem::path& filepath, bool overwrite
     for (const auto& channel : compressed_merged_image_data.data())
         write(channel.image_data);
 
-    // Close writer and check for errors.
+    // Close writer and check for errors. PSD files should not exceed 2GiB.
+    auto file_size = m_writer.tellp();
     m_writer.close();
-    if (m_writer.fail())
+    if (m_writer.fail() || file_size >= 2147483648)
     {
         m_status = PSDStatus::FileWriteError;
-        return m_status;
+        std::filesystem::remove(filepath);
     }
 
     return m_status;
