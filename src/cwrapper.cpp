@@ -30,7 +30,7 @@ extern "C"
 
 	__declspec(dllexport) bool set_profile(
 		PSDocument* psd,
-		wchar_t* icc_profile)
+		const wchar_t* icc_profile)
 	{
 		PSDStatus response = psd->set_profile(icc_profile);
 		return response == PSDStatus::Success ? true : false;
@@ -41,7 +41,7 @@ extern "C"
 		const unsigned char* img,
 		bool rgba,
 		PSDRect rect,
-		wchar_t* layer_name)
+		const wchar_t* layer_name)
 	{
 		std::filesystem::path wstr(layer_name); // BODGE
 		std::string str(wstr.string());
@@ -55,7 +55,7 @@ extern "C"
 
 	__declspec(dllexport) bool save(
 		PSDocument* psd,
-		wchar_t* filename,
+		const wchar_t* filename,
 		bool overwrite)
 	{
 		PSDStatus response = psd->save(filename, overwrite);
