@@ -146,6 +146,13 @@ void PSDRawImage::composite(const unsigned char* foreground,
 
             size_t bg_index{ static_cast<size_t>(y + rect.y) * width()
                 + x + rect.x };
+
+            // If part of the foreground image extends off of the background,
+            // don't composite.
+            if (bg_index > width() * height() || bg_index < 0)
+            {
+                break;
+            }
             
             uint8_t new_red{
                 static_cast<uint8_t>(
