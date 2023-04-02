@@ -144,12 +144,14 @@ void PSDRawImage::composite(const unsigned char* foreground,
 
             fg_alpha *= 1.0f / 255; // Normalise 0 - 1.
 
-            size_t bg_index{ static_cast<size_t>(y + rect.y) * width()
-                + x + rect.x };
+            size_t bg_index{ static_cast<size_t>(rect.y + y) * width()
+                + rect.x + x };
 
             // If part of the foreground image extends off of the background,
             // don't composite.
-            if (bg_index > width() * height() || bg_index < 0)
+            if (bg_index > width() * height()
+                || bg_index < 0
+                || rect.x + x >= width())
             {
                 break;
             }
