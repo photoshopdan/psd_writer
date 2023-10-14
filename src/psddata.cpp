@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "psddata.hpp"
 #include "psdimage.hpp"
 

@@ -1,8 +1,8 @@
-#include "framework.h"
-#include "pch.h"
 #include "psdocument.hpp"
 #include "psdtypes.hpp"
 
+#include <filesystem>
+#include <string>
 #include <locale>
 #include <codecvt>
 

@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "psdocument.hpp"
 #include "psddata.hpp"
 #include "psdtypes.hpp"
