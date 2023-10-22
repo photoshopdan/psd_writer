@@ -10,17 +10,17 @@ using namespace psdw;
 
 extern "C"
 {
-	__declspec(dllexport) PSDocument* psd_new(int w, int h)
+	DllExport PSDocument* psd_new(int w, int h)
 	{
 		return new PSDocument(w, h);
 	}
 
-	__declspec(dllexport) void psd_delete(PSDocument* psd)
+	DllExport void psd_delete(PSDocument* psd)
 	{
 		delete psd;
 	}
 
-	__declspec(dllexport) bool set_resolution(
+	DllExport bool set_resolution(
 		PSDocument* psd,
 		double resolution)
 	{
@@ -28,7 +28,7 @@ extern "C"
 		return response == PSDStatus::Success ? true : false;
 	}
 
-	__declspec(dllexport) bool set_profile(
+	DllExport bool set_profile(
 		PSDocument* psd,
 		const wchar_t* icc_profile)
 	{
@@ -36,7 +36,7 @@ extern "C"
 		return response == PSDStatus::Success ? true : false;
 	}
 
-	__declspec(dllexport) bool add_layer(
+	DllExport bool add_layer(
 		PSDocument* psd,
 		const unsigned char* img,
 		bool rgba,
@@ -53,7 +53,7 @@ extern "C"
 		return response == PSDStatus::Success ? true : false;
 	}
 
-	__declspec(dllexport) bool save(
+	DllExport bool save(
 		PSDocument* psd,
 		const wchar_t* filename,
 		bool overwrite)

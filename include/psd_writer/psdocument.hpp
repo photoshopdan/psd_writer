@@ -1,22 +1,29 @@
 #ifndef PSDOCUMENT_H
 #define PSDOCUMENT_H
 
+#define DllExport __declspec(dllexport)
+
 #include "psdtypes.hpp"
-#include "psddata.hpp"
-#include "psdwriter.hpp"
 
 #include <cstdint>
 #include <string>
+#include <filesystem>
 
 namespace psdw
 {
-	class PSDocument
+	class DllExport PSDocument
 	{
 	public:
 		/* Initialises a blank, RGB, 8BPC document. 
 		doc_width and doc_height must be between 1 and 30,000 pixels. */
 		PSDocument(int doc_width, int doc_height,
 			const PSDColour doc_background_rgb={ 255, 255, 255 });
+
+		~PSDocument();
+		PSDocument(PSDocument&&) noexcept;
+		PSDocument(const PSDocument&) = delete;
+		PSDocument& operator=(PSDocument&&) noexcept;
+		PSDocument& operator=(const PSDocument&) = delete;
 
 		/* Set document resolution in pixels per inch. ppi must be between 1 
 		and 29,999. */
@@ -40,12 +47,12 @@ namespace psdw
 		PSDStatus save(const std::filesystem::path& filename,
 			bool overwrite=false);
 
-		PSDStatus status() const { return m_status; }
+		PSDStatus status() const;
 
 	private:
-		PSDStatus m_status{ PSDStatus::Success };
-		psdimpl::PSDData m_data{};
-		psdimpl::PSDWriter m_writer{ m_data };
+		// pImpl to simplify DLL interface.
+		class PSDocumentImpl;
+		PSDocumentImpl* m_psdocument;
 	};
 }
 

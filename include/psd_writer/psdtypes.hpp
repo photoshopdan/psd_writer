@@ -1,5 +1,5 @@
-#ifndef PSDUSERTYPES_H
-#define PSDUSERTYPES_H
+#ifndef PSDTYPES_H
+#define PSDTYPES_H
 
 #include <cstdint>
 
