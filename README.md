@@ -16,13 +16,19 @@ To configure and build from the project directory:
 cmake -S . -B build
 cmake --build build --config Release
 ```
+To run the tests:
+```Shell
+ctest -C Release --test-dir build  
+```
 
 ## Usage
-A basic use is shown below. First a blank, 1920px X 1080px document is created, then an image is added as a layer, before the document is saved as a file. An OpenCV Mat object has been used in this case by accessing the pointer to its internal array, but any pointer to an image array will work, as long as the data is band-interleaved-by-pixel RGBA or BGRA.
+The output of the build process is an import library and DLL which can be imported into your code as usual.
 
-#include "psdocument.hpp"
+A basic use is shown below. First a blank, 1920px X 1080px document is created, then an image is added as a layer, then the document is saved as a file. An OpenCV Mat object has been used in this case by accessing the pointer to its internal array, but any pointer to an image array will work, as long as the data is band-interleaved-by-pixel RGBA or BGRA.
 
 ```cpp
+#include "psdocument.hpp"
+
 int main()
 {
     psdw::PSDocument psd{ 1920, 1080 };
@@ -51,11 +57,11 @@ int main()
     cv::Mat img;
     img = cv::imread("C:/Users/Dan/Desktop/img.png", cv::IMREAD_COLOR);
     psd.add_layer(img.data, { 50, 30, img.cols, img.rows }, "Layer 1",
-        PSDChannelOrder::BGRA, PSDCompression::RLE)
+        psdw::PSDChannelOrder::BGRA, psdw::PSDCompression::RLE);
 
     psd.save("Test.psd");
 
-    if (psd.status() == PSDStatus::Success)
+    if (psd.status() == psdw::PSDStatus::Success)
         return EXIT_SUCCESS;
     else
         return EXIT_FAILURE;
