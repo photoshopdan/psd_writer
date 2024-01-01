@@ -16,7 +16,7 @@ To configure and build from the project directory:
 cmake -S . -B build
 cmake --build build --config Release
 ```
-To run the tests:
+To run the tests from the project directory:
 ```Shell
 ctest -C Release --test-dir build  
 ```
