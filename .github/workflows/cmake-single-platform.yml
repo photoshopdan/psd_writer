@@ -1,0 +1,25 @@
+name: CMake on a single platform
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Configure CMake
+      run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      run: ctest -C ${{env.BUILD_TYPE}} --test-dir ${{github.workspace}}/build
+
