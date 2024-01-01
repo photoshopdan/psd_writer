@@ -25,10 +25,10 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}} --test-dir ${{github.workspace}}/build
 
     - name: Create package
-      - uses: vimtor/action-zip@v1.1
-        with:
-          files: ${{github.workspace}}/build/src/Release/psd_writer.lib ${{github.workspace}}/build/src/Release/psd_writer.dll
-          dest: ${{github.workspace}}/build/psd_writer-${{ github.ref }}-windows.zip
+      uses: vimtor/action-zip@v1.1
+      with:
+        files: ${{github.workspace}}/build/src/Release/psd_writer.lib ${{github.workspace}}/build/src/Release/psd_writer.dll
+        dest: ${{github.workspace}}/build/psd_writer-${{ github.ref }}-windows.zip
 
     - name: Create Release
       id: create_release
