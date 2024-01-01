@@ -32,6 +32,8 @@ jobs:
     
     - name: Create Release
       uses: ncipollo/release-action@v1
+      permissions:
+        contents: write
       with:
         name: psd_writer ${{ github.ref_name }}
         artifacts: build/psd_writer-${{ github.ref_name }}-windows.zip
