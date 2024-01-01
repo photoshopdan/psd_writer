@@ -29,9 +29,11 @@ A basic use is shown below. First a blank, 1920px X 1080px document is created, 
 ```cpp
 #include "psdocument.hpp"
 
+using namespace psdw;
+
 int main()
 {
-    psdw::PSDocument psd{ 1920, 1080 };
+    PSDocument psd{ 1920, 1080 };
 
     cv::Mat img;
     img = cv::imread("C:/Users/Dan/Desktop/img.png", cv::IMREAD_COLOR);
@@ -48,20 +50,22 @@ The PSDocument object can be initialised with finer control over the PSD options
 ```cpp
 #include "psdocument.hpp"
 
+using namespace psdw;
+
 int main()
 {
-    psdw::PSDocument psd{ 3000, 2000, {128, 128, 128} };
+    PSDocument psd{ 3000, 2000, {128, 128, 128} };
     psd.set_resolution(300.0);
     psd.set_profile("C:/Windows/System32/spool/drivers/color/profile.icm");
 
     cv::Mat img;
     img = cv::imread("C:/Users/Dan/Desktop/img.png", cv::IMREAD_COLOR);
     psd.add_layer(img.data, { 50, 30, img.cols, img.rows }, "Layer 1",
-        psdw::PSDChannelOrder::BGRA, psdw::PSDCompression::RLE);
+        PSDChannelOrder::BGRA, PSDCompression::RLE);
 
     psd.save("Test.psd");
 
-    if (psd.status() == psdw::PSDStatus::Success)
+    if (psd.status() == PSDStatus::Success)
         return EXIT_SUCCESS;
     else
         return EXIT_FAILURE;
