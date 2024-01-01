@@ -1,4 +1,5 @@
 #include "psdocument.hpp"
+#include <cstdio>
 
 using namespace psdw;
 
@@ -8,7 +9,10 @@ int main()
     psd.set_resolution(300.0);
     psd.set_profile("C:/Windows/System32/spool/drivers/color/profile.icm");
 
-    psd.save("Test.psd");
+    const char filename[]{ "Test.psd" };
+    psd.save(filename);
+
+    std::remove(filename);
 
     if (psd.status() == PSDStatus::Success)
         return EXIT_SUCCESS;
