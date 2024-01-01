@@ -27,8 +27,8 @@ jobs:
     - name: Create package
       uses: vimtor/action-zip@v1.1
       with:
-        files: ${{github.workspace}}/build/src/Release/psd_writer.lib ${{github.workspace}}/build/src/Release/psd_writer.dll
-        dest: ${{github.workspace}}/build/psd_writer-${{ github.ref }}-windows.zip
+        files: build/src/Release/psd_writer.lib /build/src/Release/psd_writer.dll
+        dest: build/psd_writer-${{ github.ref }}-windows.zip
 
     - name: Create Release
       id: create_release
@@ -48,6 +48,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{github.workspace}}/build/psd_writer-${{ github.ref }}-windows.zip
+        asset_path: build/psd_writer-${{ github.ref }}-windows.zip
         asset_name: psd_writer-${{ github.ref }}-windows.zip
         asset_content_type: application/zip
