@@ -1,6 +1,7 @@
+# psd_writer
+
 ![Build](https://github.com/photoshopdan/psd_writer/actions/workflows/build.yml/badge.svg)
 
-# psd_writer
 psd_writer is a simple C++ library for creating Adobe® Photoshop® PSD files. At present, it only supports the creation of 8BPC RGB documents.
 
 ## Getting started
