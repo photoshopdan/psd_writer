@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.26...3.27)
 
 project(
   psd_writer
-  VERSION 1.0.0
   LANGUAGES CXX)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
