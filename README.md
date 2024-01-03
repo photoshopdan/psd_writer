@@ -5,6 +5,8 @@
 psd_writer is a simple C++ library for creating Adobe® Photoshop® PSD files. At present, it only supports the creation of 8BPC RGB documents.
 
 ## Getting started
+Builds of the shared library can be found in [releases](https://github.com/photoshopdan/psd_writer/releases). Alternatively you can build it yourself, as shown below.
+
 ### Prerequisites
 - Git.
 - CMake 3.26 or higher.
