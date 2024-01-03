@@ -38,3 +38,4 @@ jobs:
       with:
         name: psd_writer ${{ github.ref_name }}
         artifacts: build/psd_writer-${{ github.ref_name }}-windows.zip
+        generateReleaseNotes: true
