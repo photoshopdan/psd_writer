@@ -254,6 +254,9 @@ uint32_t ImageResources::length() const
     {
         length += icc_profile.length() + prefix_length;
     }
+    length += grid_and_guides.length() % 2 == 0
+        ? grid_and_guides.length() + prefix_length
+        : grid_and_guides.length() + prefix_length + 1; // Pad to even.
 
     return length;
 }
@@ -261,6 +264,15 @@ uint32_t ImageResources::length() const
 uint32_t ICCProfile::length() const
 {
     return static_cast<uint32_t>(data.size());
+}
+
+uint32_t GridAndGuides::length() const
+{
+    uint32_t length{ 16 };
+
+    length += static_cast<uint32_t>(guides.size()) * 5;
+
+    return length;
 }
 
 uint32_t LayerAndMaskInfo::layer_and_mask_info_length() const

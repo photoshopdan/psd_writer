@@ -1,7 +1,7 @@
 import ctypes
 
 lib = ctypes.cdll.LoadLibrary(
-    r'C:\Users\Dan\source\repos\psd_writer\x64\Release\psd_writer.dll')
+    r'psd_writer.dll')
 
 class PSDRect:
     def __init__(self, x, y, w, h):
@@ -30,6 +30,9 @@ class PSDocument(object):
         lib.set_profile.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
         lib.set_profile.restype = ctypes.c_bool
 
+        lib.add_guide.argtypes = [ctypes.c_int, ctypes.c_int]
+        lib.add_guide.restype = ctypes.c_bool
+
         lib.add_layer.argtypes = [ctypes.c_void_p,
                                   ctypes.POINTER(ctypes.c_char),
                                   ctypes.c_bool,
@@ -50,6 +53,9 @@ class PSDocument(object):
     
     def set_profile(self, profile_path):
         return lib.set_profile(self.obj, profile_path)
+    
+    def add_guide(self, position, orientation):
+        return lib.add_guide(self.obj, position, orientation)
     
     def add_layer(self, img, rgba, rect, layer_name):
         return lib.add_layer(self.obj, from_ndarray(img), rgba, rect.rect,

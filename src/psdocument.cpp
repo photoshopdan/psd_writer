@@ -122,6 +122,20 @@ public:
         return m_status;
     }
 
+    PSDStatus add_guide(int position, PSDOrientation orientation)
+    {
+        m_status = PSDStatus::Success;
+
+        int multiplier = 32;
+        psdimpl::Guide guide{ 
+            static_cast<int32_t>(position * multiplier),
+            static_cast<uint8_t>(orientation) };
+        m_data.image_resources.grid_and_guides.guides.push_back(guide);
+        m_data.image_resources.grid_and_guides.guide_count++;
+
+        return m_status;
+    }
+
     PSDStatus add_layer(const unsigned char* img,
         PSDRect rect,
         const std::string layer_name, PSDChannelOrder channel_order,
@@ -243,6 +257,11 @@ PSDStatus PSDocument::set_resolution(double ppi)
 PSDStatus PSDocument::set_profile(std::filesystem::path icc_profile)
 {
     return m_psdocument->set_profile(icc_profile);
+}
+
+PSDStatus PSDocument::add_guide(int position, PSDOrientation orientation)
+{
+    return m_psdocument->add_guide(position, orientation);
 }
 
 PSDStatus PSDocument::add_layer(const unsigned char* img,

@@ -28,6 +28,7 @@ namespace psdimpl
 		void write(const uint16_t& val);
 		void write(const int16_t& val);
 		void write(const uint32_t& val);
+		void write(const int32_t& val);
 		void write(const double& val);
 		void write_with_null(const double& val);
 		void write(const std::vector<char>& val);

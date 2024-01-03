@@ -71,6 +71,24 @@ PSDStatus PSDWriter::write(const std::filesystem::path& filepath, bool overwrite
         write(m_data.image_resources.icc_profile.data);
     }
 
+    write(m_data.image_resources.grid_and_guides.signature);
+    write(m_data.image_resources.grid_and_guides.uid);
+    write(m_data.image_resources.grid_and_guides.null_name);
+    write(m_data.image_resources.grid_and_guides.length());
+    write(m_data.image_resources.grid_and_guides.version);
+    write(m_data.image_resources.grid_and_guides.grid_cycle_horizontal);
+    write(m_data.image_resources.grid_and_guides.grid_cycle_vertical);
+    write(m_data.image_resources.grid_and_guides.guide_count);
+    for (const Guide& g : m_data.image_resources.grid_and_guides.guides)
+    {
+        write(g.position);
+        write(g.orientation);
+    }
+    if (m_data.image_resources.grid_and_guides.length() % 2 != 0)
+    {
+        write(m_data.image_resources.grid_and_guides.padding);
+    }
+
     // Layer and mask section.
     write(m_data.layer_and_mask_info.layer_and_mask_info_length());
     write(m_data.layer_and_mask_info.layer_info_length());
@@ -251,6 +269,11 @@ void PSDWriter::write(const uint32_t& val)
     }
 
     m_writer.write(buffer, sizeof(val));
+}
+
+void PSDWriter::write(const int32_t& val)
+{
+    write(static_cast<uint32_t>(val));
 }
 
 void PSDWriter::write(const double& val)

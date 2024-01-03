@@ -225,11 +225,30 @@ namespace psdimpl
 		std::vector<char> data{};
 	};
 
+	struct Guide
+	{
+		int32_t position{};
+		uint8_t orientation{};
+	};
+
+	struct GridAndGuides : public ImageResourceBlock
+	{
+		uint16_t uid{ 1032 };
+		uint32_t length() const;
+		uint32_t version{ 1 };
+		uint32_t grid_cycle_horizontal{ 576 };
+		uint32_t grid_cycle_vertical{ 576 };
+		uint32_t guide_count{ 0 };
+		std::vector<Guide> guides{};
+		uint8_t padding{ 0 };
+	};
+
 	struct ImageResources
 	{
 		uint32_t length() const;
 		ResolutionInfo resolution{};
 		ICCProfile icc_profile{};
+		GridAndGuides grid_and_guides{};
 	};
 
 	struct LayerAndMaskInfo

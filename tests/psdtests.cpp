@@ -67,6 +67,15 @@ int main()
         return EXIT_FAILURE;
     }
 
+    psd.add_guide(25, PSDOrientation::Vertical);
+    psd.add_guide(-25, PSDOrientation::Vertical);
+    psd.add_guide(775, PSDOrientation::Horizontal);
+    psd.add_guide(825, PSDOrientation::Horizontal);
+    if (psd.status() != PSDStatus::Success)
+    {
+        return EXIT_FAILURE;
+    }
+
     DefaultImage image{};
     psd.add_layer(image.get_image_ptr(), { 400, 200, image.m_width, image.m_height },
         "Layer 1", PSDChannelOrder::RGBA);

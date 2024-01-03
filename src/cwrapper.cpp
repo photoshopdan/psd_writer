@@ -36,6 +36,15 @@ extern "C"
 		return response == PSDStatus::Success ? true : false;
 	}
 
+	DllExport bool add_guide(
+		PSDocument* psd,
+		int position,
+		PSDOrientation orientation)
+	{
+		PSDStatus response = psd->add_guide(position, orientation);
+		return response == PSDStatus::Success ? true : false;
+	}
+
 	DllExport bool add_layer(
 		PSDocument* psd,
 		const unsigned char* img,

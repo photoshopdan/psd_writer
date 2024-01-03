@@ -16,6 +16,12 @@ namespace psdw
 		int x{}, y{}, w{}, h{};
 	};
 
+	enum class PSDOrientation
+	{
+		Vertical,
+		Horizontal
+	};
+
 	enum class PSDStatus
 	{
 		Success,

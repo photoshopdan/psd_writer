@@ -31,6 +31,8 @@ namespace psdw
 
 		PSDStatus set_profile(std::filesystem::path icc_profile);
 
+		PSDStatus add_guide(int position, PSDOrientation orientation);
+
 		/* img should be a pointer to an 8BPC band-interleaved-by-pixel colour 
 		array in RGBA or BGRA format. rect contains the x and y coordinate 
 		of the top-left corner of the layer and the actual width and height of 
