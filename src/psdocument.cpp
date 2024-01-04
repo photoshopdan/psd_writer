@@ -168,7 +168,10 @@ public:
             img, co, rect.w, rect.h);
 
         // Add image to merged image.
-        m_data.image_data.composite(img, rect, channel_order);
+        if (visible)
+        {
+            m_data.image_data.composite(img, rect, channel_order);
+        }
 
         // Update layer data.
         m_data.layer_and_mask_info.layer_records.push_back(
