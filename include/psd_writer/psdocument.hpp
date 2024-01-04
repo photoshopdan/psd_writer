@@ -43,6 +43,7 @@ namespace psdw
 		PSDStatus add_layer(const unsigned char* img,
 			PSDRect rect,
 			std::string layer_name,
+			bool visible=true,
 			PSDChannelOrder channel_order=PSDChannelOrder::BGRA,
 			PSDCompression compression=PSDCompression::RLE);
 

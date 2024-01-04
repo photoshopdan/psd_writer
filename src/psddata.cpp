@@ -190,9 +190,12 @@ uint32_t LayerMaskData::length() const
     return active ? 20 : 0;
 }
 
-LayerRecord::LayerRecord(uint32_t l_number, std::string l_name)
-    : flags{ l_number == 1 ?
-    static_cast<uint8_t>(9) : static_cast<uint8_t>(8) }
+LayerRecord::LayerRecord(uint32_t l_number, std::string l_name, bool l_visible)
+    : flags{ l_number == 1
+        ? static_cast<uint8_t>(9)
+        : l_visible == true
+            ? static_cast<uint8_t>(8)
+            : static_cast<uint8_t>(10)}
     , layer_name{ l_name }
     , unicode_layer_name{ l_name }
     , layer_name_source_setting{ l_number == 1 ? "bgnd" : "layr" }

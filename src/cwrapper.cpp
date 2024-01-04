@@ -50,7 +50,8 @@ extern "C"
 		const unsigned char* img,
 		bool rgba,
 		PSDRect rect,
-		const wchar_t* layer_name)
+		const wchar_t* layer_name,
+		bool visible)
 	{
 		std::filesystem::path wstr(layer_name); // BODGE
 		std::string str(wstr.string());
@@ -58,7 +59,7 @@ extern "C"
 		psdw::PSDChannelOrder channel_order =
 			rgba ? PSDChannelOrder::RGBA : PSDChannelOrder::BGRA;
 
-		PSDStatus response = psd->add_layer(img, rect, str, channel_order);
+		PSDStatus response = psd->add_layer(img, rect, str, visible, channel_order);
 		return response == PSDStatus::Success ? true : false;
 	}
 

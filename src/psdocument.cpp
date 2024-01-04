@@ -45,7 +45,7 @@ public:
 
         // Update layer and mask section data.
         m_data.layer_and_mask_info.layer_records.push_back(
-            LayerRecord{1, "Background"});
+            LayerRecord{1, "Background", true});
         m_data.layer_and_mask_info.layer_records.back().layer_content_rect = {
             0, 0, m_data.header.height, m_data.header.width };
         m_data.layer_and_mask_info.layer_records.back().channel_count = 3;
@@ -138,7 +138,9 @@ public:
 
     PSDStatus add_layer(const unsigned char* img,
         PSDRect rect,
-        const std::string layer_name, PSDChannelOrder channel_order,
+        const std::string layer_name,
+        bool visible,
+        PSDChannelOrder channel_order,
         PSDCompression compression)
     {
         m_status = PSDStatus::Success;
@@ -173,7 +175,8 @@ public:
             LayerRecord{
                 static_cast<uint32_t>(
                     m_data.layer_and_mask_info.layer_count() + 1),
-                layer_name});
+                layer_name,
+                visible});
         m_data.layer_and_mask_info.layer_records.back().layer_content_rect = {
             static_cast<uint32_t>(rect.y),
             static_cast<uint32_t>(rect.x),
@@ -267,10 +270,11 @@ PSDStatus PSDocument::add_guide(int position, PSDOrientation orientation)
 PSDStatus PSDocument::add_layer(const unsigned char* img,
     PSDRect rect,
 	std::string layer_name,
+    bool visible,
 	PSDChannelOrder channel_order,
 	PSDCompression compression)
 {
-    return m_psdocument->add_layer(img, rect, layer_name, channel_order, compression);
+    return m_psdocument->add_layer(img, rect, layer_name, visible, channel_order, compression);
 }
 
 PSDStatus PSDocument::save(const std::filesystem::path& filename,

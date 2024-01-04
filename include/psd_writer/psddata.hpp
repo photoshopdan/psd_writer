@@ -127,7 +127,7 @@ namespace psdimpl
 
 	struct LayerRecord
 	{
-		LayerRecord(uint32_t l_number, std::string l_name);
+		LayerRecord(uint32_t l_number, std::string l_name, bool l_visible);
 
 		uint32_t length() const;
 		LayerRect layer_content_rect{};

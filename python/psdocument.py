@@ -37,7 +37,8 @@ class PSDocument(object):
                                   ctypes.POINTER(ctypes.c_char),
                                   ctypes.c_bool,
                                   ctypesPSDRect,
-                                  ctypes.c_wchar_p]
+                                  ctypes.c_wchar_p,
+                                  ctypes.c_bool]
         lib.add_layer.restype = ctypes.c_bool
 
         lib.save.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_bool]
@@ -57,9 +58,9 @@ class PSDocument(object):
     def add_guide(self, position, orientation):
         return lib.add_guide(self.obj, position, orientation)
     
-    def add_layer(self, img, rgba, rect, layer_name):
+    def add_layer(self, img, rgba, rect, layer_name, visible):
         return lib.add_layer(self.obj, from_ndarray(img), rgba, rect.rect,
-                             layer_name)
+                             layer_name, visible)
     
     def save(self, save_path, overwrite):
         return lib.save(self.obj, save_path, overwrite)

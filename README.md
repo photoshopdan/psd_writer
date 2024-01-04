@@ -50,7 +50,7 @@ int main()
 }
 ```
 
-The PSDocument object can be initialised with finer control over the PSD options. Here a 3000px wide by 2000px tall, 300ppi, grey canvas is created, with an assigned colour profile and a guide. The channel order and compression type can be specified when adding a layer. Each method returns a value indicating whether the operation succeeded or if not, the reason for failure.
+The PSDocument object can be initialised with finer control over the PSD options. Here a 3000px wide by 2000px tall, 300ppi, grey canvas is created, with an assigned colour profile and a guide. The visibility, channel order and compression type can be specified when adding a layer. Each method returns a value indicating whether the operation succeeded or if not, the reason for failure.
 
 ```cpp
 #include "psdocument.hpp"
@@ -67,7 +67,7 @@ int main()
     cv::Mat img;
     img = cv::imread("C:/Users/Dan/Desktop/img.png", cv::IMREAD_COLOR);
     psd.add_layer(img.data, { 50, 30, img.cols, img.rows }, "Layer 1",
-        PSDChannelOrder::BGRA, PSDCompression::RLE);
+        true, PSDChannelOrder::BGRA, PSDCompression::RLE);
 
     psd.save("Test.psd");
 

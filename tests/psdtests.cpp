@@ -78,7 +78,14 @@ int main()
 
     DefaultImage image{};
     psd.add_layer(image.get_image_ptr(), { 400, 200, image.m_width, image.m_height },
-        "Layer 1", PSDChannelOrder::RGBA);
+        "Layer 1", true, PSDChannelOrder::RGBA);
+    if (psd.status() != PSDStatus::Success)
+    {
+        return EXIT_FAILURE;
+    }
+
+    psd.add_layer(image.get_image_ptr(), { 700, 400, image.m_width, image.m_height },
+        "Layer 2", false, PSDChannelOrder::RGBA);
     if (psd.status() != PSDStatus::Success)
     {
         return EXIT_FAILURE;
