@@ -30,7 +30,7 @@ class PSDocument(object):
         lib.set_profile.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
         lib.set_profile.restype = ctypes.c_bool
 
-        lib.add_guide.argtypes = [ctypes.c_int, ctypes.c_int]
+        lib.add_guide.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
         lib.add_guide.restype = ctypes.c_bool
 
         lib.add_layer.argtypes = [ctypes.c_void_p,
