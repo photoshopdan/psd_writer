@@ -31,11 +31,11 @@ jobs:
       uses: vimtor/action-zip@v1.1
       with:
         files: build/src/Release/psd_writer.lib build/src/Release/psd_writer.dll
-        dest: build/psd_writer-${{ github.ref_name }}-windows.zip
+        dest: build/psd_writer-${{ github.ref_name }}-windows-x64.zip
     
     - name: Create Release
       uses: ncipollo/release-action@v1
       with:
         name: psd_writer ${{ github.ref_name }}
-        artifacts: build/psd_writer-${{ github.ref_name }}-windows.zip
+        artifacts: build/psd_writer-${{ github.ref_name }}-windows-x64.zip
         generateReleaseNotes: true
